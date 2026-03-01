@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Orders - Seller Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link th:href="@{/static/css/sellerorder.css}" rel="stylesheet"/>
+  </head>
+  <body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+      <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar d-none d-lg-block" id="sidebar">
+      <h4>Seller Dashboard</h4>
+      <nav class="nav flex-column">
+        <a class="nav-link" th:href="@{/seller/dashboard}"
+          ><i class="fas fa-home"></i> Dashboard</a
+        >
+        <a class="nav-link" th:href="@{/seller/sellerproducts}"
+          ><i class="fas fa-box"></i> Products</a
+        >
+        <a class="nav-link active" th:href="@{/seller/sellerorders}"
+          ><i class="fas fa-shopping-cart"></i> Orders</a
+        >
+        <a class="nav-link" th:href="@{/seller/sellercategories}"
+          ><i class="fas fa-tags"></i> Categories</a
+        >
+        <a class="nav-link" th:href="@{/seller/profile}"
+          ><i class="fas fa-user"></i> Profile</a
+        >
+        <a class="nav-link" href="#" onclick="logout()"
+          ><i class="fas fa-sign-out-alt"></i> Logout</a
+        >
+      </nav>
+    </div>
+
+    <!-- Offcanvas Sidebar for Mobile -->
+    <div
+      class="offcanvas offcanvas-start sidebar-offcanvas"
+      tabindex="-1"
+      id="sidebarOffcanvas"
+      aria-labelledby="sidebarOffcanvasLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">
+          Seller Dashboard
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <nav class="nav flex-column">
+          <a class="nav-link" th:href="@{/seller/dashboard}"
+            ><i class="fas fa-home"></i> Dashboard</a
+          >
+          <a class="nav-link" th:href="@{/seller/sellerproducts}"
+            ><i class="fas fa-box"></i> Products</a
+          >
+          <a class="nav-link active" th:href="@{/seller/sellerorders}"
+            ><i class="fas fa-shopping-cart"></i> Orders</a
+          >
+          <a class="nav-link" th:href="@{/seller/sellercategories}"
+            ><i class="fas fa-tags"></i> Categories</a
+          >
+          <a class="nav-link" th:href="@{/seller/profile}"
+            ><i class="fas fa-user"></i> Profile</a
+          >
+          <a class="nav-link" href="#" onclick="logout()"
+            ><i class="fas fa-sign-out-alt"></i> Logout</a
+          >
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Mobile Sidebar Toggle -->
+        <button
+          class="btn btn-primary d-lg-none mb-4"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#sidebarOffcanvas"
+          aria-controls="sidebarOffcanvas"
+        >
+          <i class="fas fa-bars"></i> Menu
+        </button>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Manage Orders</h3>
+          </div>
+          <div class="card-body p-4">
+            <div id="ordersAlert" class="alert"></div>
+            <div class="loading-spinner">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <div class="mb-3 d-flex gap-2 flex-wrap">
+              <select id="statusFilter" class="form-select w-auto">
+                <option value="">All Orders</option>
+                <option value="NEW">New</option>
+                <option value="PROCESSING">Processing</option>
+                <option value="SHIPPED">Shipped</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+              <a th:href="@{/seller/dashboard}" class="btn btn-secondary"
+                >Back to Dashboard</a
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Order Status</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="statusForm">
+              <input type="hidden" id="orderId" />
+              <div class="mb-3">
+                <label for="orderStatus" class="form-label">Order Status</label>
+                <select class="form-select" id="orderStatus" required>
+                  <option value="">Select Status</option>
+                  <option value="NEW">New</option>
+                  <option value="PROCESSING">Processing</option>
+                  <option value="SHIPPED">Shipped</option>
+                  <option value="DELIVERED">Delivered</option>
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid status.
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Update Status
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/static/js/sellerorder.js}"></script>
+  </body>
+</html>

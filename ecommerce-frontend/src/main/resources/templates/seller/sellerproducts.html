@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Products</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link th:href="@{/static/css/sellerproducts.css}" rel="stylesheet"/>
+  </head>
+  <body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+      <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar d-none d-lg-block" id="sidebar">
+      <h4>Seller Dashboard</h4>
+      <nav class="nav flex-column">
+        <a class="nav-link" th:href="@{/seller/dashboard}"
+          ><i class="fas fa-home"></i> Dashboard</a
+        >
+        <a class="nav-link active" th:href="@{/seller/sellerproducts}"
+          ><i class="fas fa-box"></i> Products</a
+        >
+        <a class="nav-link" th:href="@{/seller/sellerorders}"
+          ><i class="fas fa-shopping-cart"></i> Orders</a
+        >
+        <a class="nav-link" th:href="@{/seller/sellercategories}"
+          ><i class="fas fa-tags"></i> Categories</a
+        >
+        <a class="nav-link" th:href="@{/seller/profile}"
+          ><i class="fas fa-user"></i> Profile</a
+        >
+        <a class="nav-link" href="#" onclick="logout()"
+          ><i class="fas fa-sign-out-alt"></i> Logout</a
+        >
+      </nav>
+    </div>
+
+    <!-- Offcanvas Sidebar for Mobile -->
+    <div
+      class="offcanvas offcanvas-start sidebar-offcanvas"
+      tabindex="-1"
+      id="sidebarOffcanvas"
+      aria-labelledby="sidebarOffcanvasLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">
+          Seller Dashboard
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <nav class="nav flex-column">
+          <a class="nav-link" th:href="@{/seller/dashboard}"
+            ><i class="fas fa-home"></i> Dashboard</a
+          >
+          <a class="nav-link active" th:href="@{/seller/sellerproducts}"
+            ><i class="fas fa-box"></i> Products</a
+          >
+          <a class="nav-link" th:href="@{/seller/sellerorders}"
+            ><i class="fas fa-shopping-cart"></i> Orders</a
+          >
+          <a class="nav-link" th:href="@{/seller/sellercategories}"
+            ><i class="fas fa-tags"></i> Categories</a
+          >
+          <a class="nav-link" th:href="@{/seller/profile}"
+            ><i class="fas fa-user"></i> Profile</a
+          >
+          <a class="nav-link" href="#" onclick="logout()"
+            ><i class="fas fa-sign-out-alt"></i> Logout</a
+          >
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Mobile Sidebar Toggle -->
+        <button
+          class="btn btn-primary d-lg-none mb-4"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#sidebarOffcanvas"
+          aria-controls="sidebarOffcanvas"
+        >
+          <i class="fas fa-bars"></i> Menu
+        </button>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Manage Products</h3>
+          </div>
+          <div class="card-body p-4">
+            <div id="productsAlert" class="alert"></div>
+            <div class="mb-3 d-flex gap-2 flex-wrap">
+              <button
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#productModal"
+                onclick="resetProductForm()"
+              >
+                Add Product
+              </button>
+              <button
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#categoryModal"
+              >
+                Add Category
+              </button>
+              <button
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#subcategoryModal"
+                onclick="loadCategoriesForSubcategory()"
+              >
+                Add Subcategory
+              </button>
+              <a th:href="@{/seller/dashboard}" class="btn btn-secondary"
+                >Back to Dashboard</a
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Thumbnail</th>
+                    <th>Name</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>MRP</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Subcategory</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="productModalTitle">Add Product</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="productForm">
+              <input type="hidden" id="productId" />
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="name" class="form-label">Name</label>
+                  <input type="text" class="form-control" id="name" required />
+                  <div class="invalid-feedback">Please enter a product name.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="sku" class="form-label">SKU</label>
+                  <input type="text" class="form-control" id="sku" required />
+                  <div class="invalid-feedback">Please enter a SKU.</div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  required
+                ></textarea>
+                <div class="invalid-feedback">
+                  Please enter a description.
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="actualPrice" class="form-label"
+                    >Actual Price</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="actualPrice"
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                  <div class="invalid-feedback">
+                    Please enter a valid price.
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="mrp" class="form-label">MRP</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="mrp"
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                  <div class="invalid-feedback">Please enter a valid MRP.</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="margin" class="form-label">Margin</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="margin"
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                  <div class="invalid-feedback">
+                    Please enter a valid margin.
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="thumbnailUrl" class="form-label"
+                  >Thumbnail URL</label
+                >
+                <input
+                  type="url"
+                  class="form-control"
+                  id="thumbnailUrl"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="categoryId" class="form-label">Category</label>
+                  <select
+                    class="form-select"
+                    id="categoryId"
+                    required
+                    onchange="loadSubcategories()"
+                  >
+                    <option value="" disabled selected>Select category</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Please select a category.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="subcategoryId" class="form-label"
+                    >Subcategory</label
+                  >
+                  <select
+                    class="form-select"
+                    id="subcategoryId"
+                    required
+                    disabled
+                  >
+                    <option value="" disabled selected>
+                      Select subcategory
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Please select a subcategory.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="quantity" class="form-label"
+                    >Stock Quantity</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="quantity"
+                    min="0"
+                    required
+                  />
+                  <div class="invalid-feedback">
+                    Please enter a valid quantity.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lowStockThreshold" class="form-label"
+                    >Low Stock Threshold</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="lowStockThreshold"
+                    min="0"
+                    value="10"
+                    required
+                  />
+                  <div class="invalid-feedback">
+                    Please enter a valid threshold.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="isActive" class="form-label">Active</label>
+                  <select class="form-select" id="isActive" required>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Please select active status.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="inStock" class="form-label">In Stock</label>
+                  <select class="form-select" id="inStock" required>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Please select stock status.
+                  </div>
+                </div>
+              </div>
+              <!-- Variants Section -->
+              <div class="nested-table">
+                <h6>Variants</h6>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm mb-2"
+                  id="addVariantBtn"
+                  onclick="openVariantModal(null)"
+                  disabled
+                >
+                  Add Variant
+                </button>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Values</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="variantsTable"></tbody>
+                </table>
+              </div>
+              <!-- Images Section -->
+              <div class="nested-table">
+                <h6>Images</h6>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm mb-2"
+                  id="addImageBtn"
+                  onclick="openImageModal(null)"
+                  disabled
+                >
+                  Add Image
+                </button>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Preview</th>
+                      <th>URL</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="imagesTable"></tbody>
+                </table>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mt-3">
+                Save Product
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Category</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="categoryForm">
+              <div class="mb-3">
+                <label for="categoryName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="categoryName"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Please enter a category name.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="categoryDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="categoryDescription"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subcategory Modal -->
+    <div class="modal fade" id="subcategoryModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Subcategory</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="subcategoryForm">
+              <div class="mb-3">
+                <label for="subcategoryCategoryId" class="form-label"
+                  >Category</label
+                >
+                <select
+                  class="form-select"
+                  id="subcategoryCategoryId"
+                  required
+                >
+                  <option value="" disabled selected>Select category</option>
+                </select>
+                <div class="invalid-feedback">
+                  Please select a category.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="subcategoryName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="subcategoryName"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Please enter a subcategory name.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="subcategoryDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="subcategoryDescription"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant Modal -->
+    <div class="modal fade" id="variantModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="variantModalTitle">Add Variant</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="variantForm">
+              <input type="hidden" id="variantId" />
+              <div class="mb-3">
+                <label for="variantType" class="form-label">Variant Type</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="variantType"
+                  placeholder="e.g., Color, Size"
+                  required
+                />
+                <div class="invalid-feedback">Please enter a variant type.</div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Save Variant
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant Value Modal -->
+    <div class="modal fade" id="variantValueModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="variantValueModalTitle">
+              Add Variant Value
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="variantValueForm">
+              <input type="hidden" id="variantValueId" />
+              <input type="hidden" id="variantValueVariantId" />
+              <div class="mb-3">
+                <label for="variantValue" class="form-label">Value(s)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="variantValue"
+                  placeholder="e.g., Red, Blue, Green"
+                  required
+                />
+                <small class="form-text text-muted"
+                  >Enter multiple values separated by commas.</small
+                >
+                <div class="invalid-feedback">Please enter at least one value.</div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Save Value(s)
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imageModalTitle">Add Image</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="imageForm">
+              <input type="hidden" id="imageId" />
+              <div class="mb-3">
+                <label for="imageUrl" class="form-label">Image URL</label>
+                <input type="url" class="form-control" id="imageUrl" required />
+                <div class="invalid-feedback">Please enter a valid URL.</div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/static/js/sellerproducts.js}"></script>
+  </body>
+</html>

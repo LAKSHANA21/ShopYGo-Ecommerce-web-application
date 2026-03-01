@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Registration</title>
+    <link rel="stylesheet" href="/static/css/seller.css">
+</head>
+<body>
+    <div class="seller-auth-container">
+        <h2>Seller Registration</h2>
+        
+        <div id="registerError" class="error-message" style="display: none;"></div>
+        
+        <form id="sellerRegisterForm">
+            <h3>Personal Information</h3>
+            <div class="seller-form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob">
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                    <option value="">Select</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+            
+            <h3>Address</h3>
+            <div class="seller-form-group">
+                <label for="addressLine1">Address Line 1</label>
+                <input type="text" id="addressLine1" name="addressLine1" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="addressLine2">Address Line 2</label>
+                <input type="text" id="addressLine2" name="addressLine2">
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="state">State/Province</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="postalCode">Postal Code</label>
+                <input type="text" id="postalCode" name="postalCode" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="country">Country</label>
+                <input type="text" id="country" name="country" required>
+            </div>
+            
+            <h3>Business Information</h3>
+            <div class="seller-form-group">
+                <label for="storeName">Store Name</label>
+                <input type="text" id="storeName" name="storeName" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="businessDetails">Business Details</label>
+                <textarea id="businessDetails" name="businessDetails" rows="3" required></textarea>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="contactNumber">Business Contact Number</label>
+                <input type="tel" id="contactNumber" name="contactNumber" required>
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="gstNumber">GST Number</label>
+                <input type="text" id="gstNumber" name="gstNumber">
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="bankDetails">Bank Details</label>
+                <input type="text" id="bankDetails" name="bankDetails">
+            </div>
+            
+            <div class="seller-form-group">
+                <label for="businessEmail">Business Email</label>
+                <input type="email" id="businessEmail" name="businessEmail">
+            </div>
+            
+            <button type="submit" class="seller-btn">Register</button>
+            
+            <div class="seller-auth-footer">
+                <p>Already have an account? <a href="/seller/login">Login here</a></p>
+            </div>
+        </form>
+    </div>
+    
+    <script src="/static/js/seller.js"></script>
+</body>
+</html>

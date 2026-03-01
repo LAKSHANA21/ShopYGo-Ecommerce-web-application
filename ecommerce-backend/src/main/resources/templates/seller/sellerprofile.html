@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Profile</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link th:href="@{/static/css/sellerprofile.css}" rel="stylesheet"/>
+  </head>
+  <body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+      <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar d-none d-lg-block" id="sidebar">
+      <h4>Seller Dashboard</h4>
+      <nav class="nav flex-column">
+        <a class="nav-link" th:href="@{/seller/dashboard}">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a class="nav-link" th:href="@{/seller/sellerproducts}">
+          <i class="fas fa-box"></i> Products
+        </a>
+        <a class="nav-link" th:href="@{/seller/sellerorders}">
+          <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+        <a class="nav-link" th:href="@{/seller/sellercategories}">
+          <i class="fas fa-tags"></i> Categories
+        </a>
+        <a class="nav-link active" th:href="@{/seller/profile}">
+          <i class="fas fa-user"></i> Profile
+        </a>
+        <a class="nav-link" href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </div>
+
+    <!-- Offcanvas Sidebar for Mobile -->
+    <div
+      class="offcanvas offcanvas-start sidebar-offcanvas"
+      tabindex="-1"
+      id="sidebarOffcanvas"
+      aria-labelledby="sidebarOffcanvasLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">
+          Seller Dashboard
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <nav class="nav flex-column">
+          <a class="nav-link" th:href="@{/seller/dashboard}">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a class="nav-link" th:href="@{/seller/sellerproducts}">
+            <i class="fas fa-box"></i> Products
+          </a>
+          <a class="nav-link" th:href="@{/seller/sellerorders}">
+            <i class="fas fa-shopping-cart"></i> Orders
+          </a>
+          <a class="nav-link" th:href="@{/seller/sellercategories}">
+            <i class="fas fa-tags"></i> Categories
+          </a>
+          <a class="nav-link active" th:href="@{/seller/profile}">
+            <i class="fas fa-user"></i> Profile
+          </a>
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Mobile Sidebar Toggle -->
+        <button
+          class="btn btn-primary d-lg-none mb-4"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#sidebarOffcanvas"
+          aria-controls="sidebarOffcanvas"
+        >
+          <i class="fas fa-bars"></i> Menu
+        </button>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Seller Profile</h3>
+          </div>
+          <div class="card-body p-4">
+            <div id="profileAlert" class="alert" th:if="${message}" th:text="${message}"></div>
+            <div class="loading-spinner">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <div id="viewProfileSection">
+              <h4>Profile Details</h4>
+              <p>
+                <strong>Name:</strong> 
+                <span id="viewFirstName" th:text="${sellerProfile?.firstName}"></span>
+                <span id="viewLastName" th:text="${sellerProfile?.lastName}"></span>
+              </p>
+              <p><strong>Store:</strong> <span id="viewStoreName" th:text="${sellerProfile?.storeName}"></span></p>
+              <p><strong>Email:</strong> <span id="viewEmail" th:text="${sellerProfile?.email}"></span></p>
+              <p><strong>Phone:</strong> <span id="viewPhone" th:text="${sellerProfile?.phone}"></span></p>
+              <p>
+                <strong>Address:</strong>
+                <span id="viewAddressLine1" th:text="${sellerProfile?.addressLine1}"></span>
+                <span id="viewAddressLine2" th:text="${sellerProfile?.addressLine2}"></span>,
+                <span id="viewCity" th:text="${sellerProfile?.city}"></span>,
+                <span id="viewState" th:text="${sellerProfile?.state}"></span>,
+                <span id="viewPostalCode" th:text="${sellerProfile?.postalCode}"></span>,
+                <span id="viewCountry" th:text="${sellerProfile?.country}"></span>
+              </p>
+              <p><strong>GST Number:</strong> <span id="viewGstNumber" th:text="${sellerProfile?.gstNumber}"></span></p>
+              <p>
+                <strong>Bank Details:</strong>
+                <span id="viewBankDetails" th:text="${sellerProfile?.bankDetails}"></span>
+              </p>
+              <p>
+                <strong>Business Details:</strong>
+                <span id="viewBusinessDetails" th:text="${sellerProfile?.businessDetails}"></span>
+              </p>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-primary" onclick="showEditForm()">
+                  Edit Profile
+                </button>
+                <a
+                  th:href="@{/seller/dashboard}"
+                  class="btn btn-secondary"
+                  aria-label="Back to dashboard"
+                  >Back to Dashboard</a
+                >
+                <a
+                  th:href="@{/seller/sellerproducts}"
+                  class="btn btn-secondary"
+                  aria-label="Manage products"
+                  >Manage Products</a
+                >
+              </div>
+            </div>
+            <div id="editProfileSection" style="display: none">
+              <h4>Update Profile</h4>
+              <form id="profileForm">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="firstName"
+                      required
+                      th:value="${sellerProfile?.firstName}"
+                    />
+                    <div class="invalid-feedback">First name is required.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="lastName"
+                      required
+                      th:value="${sellerProfile?.lastName}"
+                    />
+                    <div class="invalid-feedback">Last name is required.</div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="storeName" class="form-label">Store Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="storeName"
+                    required
+                    th:value="${sellerProfile?.storeName}"
+                  />
+                  <div class="invalid-feedback">Store name is required.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    required
+                    th:value="${sellerProfile?.email}"
+                  />
+                  <div class="invalid-feedback">Please enter a valid email.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="phone" class="form-label">Phone</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    pattern="[0-9]{10}"
+                    required
+                    th:value="${sellerProfile?.phone}"
+                  />
+                  <div class="invalid-feedback">
+                    Please enter a valid 10-digit phone number.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="businessDetails" class="form-label"
+                    >Business Details</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="businessDetails"
+                    rows="4"
+                    th:text="${sellerProfile?.businessDetails}"
+                  ></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="addressLine1" class="form-label"
+                      >Address Line 1</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="addressLine1"
+                      th:value="${sellerProfile?.addressLine1}"
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="addressLine2" class="form-label"
+                      >Address Line 2</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="addressLine2"
+                      th:value="${sellerProfile?.addressLine2}"
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="city" 
+                      th:value="${sellerProfile?.city}"
+                    />
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="state" class="form-label">State</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="state" 
+                      th:value="${sellerProfile?.state}"
+                    />
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="postalCode" class="form-label"
+                      >Postal Code</label
+                    >
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="postalCode" 
+                      th:value="${sellerProfile?.postalCode}"
+                    />
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="country" class="form-label">Country</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="country" 
+                      th:value="${sellerProfile?.country}"
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="gstNumber" class="form-label">GST Number</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="gstNumber" 
+                    th:value="${sellerProfile?.gstNumber}"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="bankDetails" class="form-label"
+                    >Bank Details</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="bankDetails"
+                    rows="4"
+                    th:text="${sellerProfile?.bankDetails}"
+                  ></textarea>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button type="submit" class="btn btn-primary">
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="cancelEdit()"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/static/js/sellerprofile.js}"></script>
+  </body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Categories</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link th:href="@{/static/css/sellercategories.css}" rel="stylesheet"/>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar d-none d-lg-block" id="sidebar">
+        <h4>Seller Dashboard</h4>
+        <nav class="nav flex-column">
+            <a class="nav-link" th:href="@{/seller/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+            <a class="nav-link" th:href="@{/seller/sellerproducts}"><i class="fas fa-box"></i> Products</a>
+            <a class="nav-link" th:href="@{/seller/sellerorders}"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a class="nav-link active" th:href="@{/seller/sellercategories}"><i class="fas fa-tags"></i> Categories</a>
+            <a class="nav-link" th:href="@{/seller/profile}"><i class="fas fa-user"></i> Profile</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Offcanvas Sidebar for Mobile -->
+    <div class="offcanvas offcanvas-start sidebar-offcanvas" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Seller Dashboard</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/seller/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+                <a class="nav-link" th:href="@{/seller/sellerproducts}"><i class="fas fa-box"></i> Products</a>
+                <a class="nav-link" th:href="@{/seller/sellerorders}"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a class="nav-link active" th:href="@{/seller/sellercategories}"><i class="fas fa-tags"></i> Categories</a>
+                <a class="nav-link" th:href="@{/seller/profile}"><i class="fas fa-user"></i> Profile</a>
+                <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="container-fluid">
+            <!-- Mobile Sidebar Toggle -->
+            <button class="btn btn-primary d-lg-none mb-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+                <i class="fas fa-bars"></i> Menu
+            </button>
+
+            <!-- Categories Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Manage Categories</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div id="categoriesAlert" class="alert" th:if="${categoryMessage}" th:text="${categoryMessage}" th:classappend="${categoryErrorMessage} ? 'alert-danger' : 'alert-success'"></div>
+                    <div class="mb-3 d-flex gap-2 flex-wrap">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="resetCategoryForm()">Add Category</button>
+                        <a th:href="@{/seller/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoriesTable">
+                                <!-- Data will be loaded via JavaScript -->
+                                <tr th:if="${categories != null}" th:each="category : ${categories}" th:data-id="${category.id}">
+                                    <td th:text="${category.name}"></td>
+                                    <td th:text="${category.description}"></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary me-1" onclick="editCategory(this.closest('tr').getAttribute('data-id'))">Edit</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory(this.closest('tr').getAttribute('data-id'))">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subcategories Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Manage Subcategories</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div id="subcategoriesAlert" class="alert" th:if="${subcategoryMessage}" th:text="${subcategoryMessage}" th:classappend="${subcategoryErrorMessage} ? 'alert-danger' : 'alert-success'"></div>
+                    <div class="mb-3 d-flex gap-2 flex-wrap">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subcategoryModal" onclick="resetSubcategoryForm()">Add Subcategory</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subcategoriesTable">
+                                <!-- Data will be loaded via JavaScript -->
+                                <tr th:if="${subcategories != null}" th:each="subcategory : ${subcategories}" th:data-id="${subcategory.id}">
+                                    <td th:text="${subcategory.name}"></td>
+                                    <td th:text="${subcategory.description}"></td>
+                                    <td th:text="${subcategory.category.name}"></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary me-1" onclick="editSubcategory(this.closest('tr').getAttribute('data-id'))">Edit</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteSubcategory(this.closest('tr').getAttribute('data-id'))">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <input type="hidden" id="categoryId" />
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="categoryName" required />
+                            <div class="invalid-feedback">Please enter a category name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="categoryDescription"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategory Modal -->
+    <div class="modal fade" id="subcategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subcategoryModalTitle">Add Subcategory</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subcategoryForm">
+                        <input type="hidden" id="subcategoryId" />
+                        <div class="mb-3">
+                            <label for="subcategoryCategoryId" class="form-label">Category</label>
+                            <select class="form-select" id="subcategoryCategoryId" required>
+                                <option value="" disabled selected>Select category</option>
+                                <option th:if="${categories != null}" th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                            </select>
+                            <div class="invalid-feedback">Please select a category.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subcategoryName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="subcategoryName" required />
+                            <div class="invalid-feedback">Please enter a subcategory name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subcategoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="subcategoryDescription"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/static/js/sellercategories.js}"></script>
+</body>
+</html>

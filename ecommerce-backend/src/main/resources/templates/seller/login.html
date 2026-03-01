@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Login</title>
+    <link rel="stylesheet" href="/static/css/seller.css">
+</head>
+<body>
+    <div class="seller-auth-container">
+        <h2>Seller Login</h2>
+        
+        <div id="loginError" class="error-message" style="display: none;"></div>
+        
+        <form id="sellerLoginForm">
+            <div class="seller-form-group">
+                <label for="identifier">Email or Phone</label>
+                <input type="text" id="identifier" name="identifier" required>
+            </div>
+            
+            <div id="passwordSection">
+                <div class="seller-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
+            
+            <div id="otpSection" style="display: none;">
+                <div class="seller-form-group">
+                    <label for="otp">OTP</label>
+                    <input type="text" id="otp" name="otp">
+                </div>
+                <button type="button" id="requestOtpBtn" class="seller-btn" style="margin-bottom: 15px; background-color: #666;">
+                    Request OTP
+                </button>
+            </div>
+            
+            <button type="submit" class="seller-btn">Login</button>
+            
+            <div class="seller-auth-footer">
+                <a href="#" id="toggleAuthMethod">Use OTP Instead</a>
+                <p>Don't have an account? <a href="/seller/register">Register here</a></p>
+            </div>
+        </form>
+    </div>
+    
+    <script src="/static/js/seller.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="'Cart - E-commerce'">Cart - E-commerce</title>
+  <!-- Bootstrap CSS -->
+  <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css}" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link th:href="@{https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap}" rel="stylesheet" />
+  <link th:href="@{/static/css/cart.css}" rel="stylesheet">
+</head>
+<body>
+  <!-- Alert -->
+  <div id="alert" class="alert"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-transparent shadow-lg sticky-top" id="mainNav">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold text-white" th:href="@{/products.html}">
+        <i class="fas fa-shopping-bag me-2"></i><span th:text="'ShopEase'">ShopEase</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+          <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/products}">
+              <i class="fas fa-store me-1"></i><span th:text="'Products'">Products</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white active" th:href="@{/cart}">
+              <i class="fas fa-shopping-cart me-1"></i><span th:text="'Cart'">Cart</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/wishlist}">
+              <i class="fas fa-heart me-1"></i><span th:text="'Wishlist'">Wishlist</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/orders}">
+              <i class="fas fa-box me-1"></i><span th:text="'Orders'">Orders</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/profile}">
+              <i class="fas fa-user me-1"></i><span th:text="'Profile'">Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{#}" id="authLink">
+              <i class="fas fa-sign-out-alt me-1"></i>
+              <span id="authText" th:text="'Logout'">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-5">
+    <h2 class="section-title" th:text="'Your Cart'">Your Cart</h2>
+    <div id="loading">
+      <div class="spinner-border loading-spinner animate-spinner" role="status">
+        <span class="visually-hidden" th:text="'Loading...'">Loading...</span>
+      </div>
+      <p th:text="'Loading your items...'">Loading your cart...</p>
+    </div>
+    <div class="cart-table">
+      <table class="table">
+        <thead>
+          <tr>
+            <th th:text="'Product'">Product</th>
+            <th th:text="'Variants'">Variants</th>
+            <th th:text="'Quantity'">Quantity</th>
+            <th th:text="'Price'">Price</th>
+            <th th:text="'Subtotal'">Subtotal</th>
+            <th th:text="'Actions'">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cartItems"></tbody>
+      </table>
+      <div class="total-section">
+        <h4 id="cartTotal" th:text="'Total: ₹0'">Total: ₹0</h4>
+      </div>
+      <button class="btn btn-cart-checkout mt-3" id="checkoutBtn" disabled>
+        <i class="fas fa-check me-1"></i><span th:text="'Proceed to Checkout'">Proceed to Checkout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white py-3 position-relative" id="footer">
+    <canvas id="particle-canvas"></canvas>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 footer-section">
+          <h5 th:text="'ShopEase'">ShopEase</h5>
+          <p th:text="'Your one-stop destination for quality products at affordable prices. We\'re committed to providing the best shopping experience.'">Your one-stop destination for quality products at affordable prices. We're committed to providing the best shopping experience.</p>
+          <p><i class="fas fa-map-marker-alt"></i><span th:text="' 123 ShopEase St, Commerce City'"> 123 ShopEase St, Commerce City</span></p>
+          <p><i class="fas fa-envelope"></i><span th:text="' support@shopease.com'"> support@shopease.com</span></p>
+        </div>
+        <div class="col-md-3 footer-section">
+          <h5 th:text="'Customer Service'">Customer Service</h5>
+          <ul class="list-unstyled">
+            <li><a th:href="@{#}" class="text-white footer-link text-decoration-none" th:text="'Contact Us'">Contact Us</a></li>
+            <li><a th:href="@{#}" class="text-white footer-link text-decoration-none" th:text="'FAQs'">FAQs</a></li>
+            <li><a th:href="@{#}" class="text-white footer-link text-decoration-none" th:text="'Shipping Policy'">Shipping Policy</a></li>
+            <li><a th:href="@{#}" class="text-white footer-link text-decoration-none" th:text="'Returns & Refunds'">Returns & Refunds</a></li>
+            <li><a th:href="@{#}" class="text-white footer-link text-decoration-none" th:text="'Privacy Policy'">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 footer-section">
+          <h5 th:text="'Quick Links'">Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a th:href="@{/products.html}" class="text-white footer-link text-decoration-none" th:text="'Products'">Products</a></li>
+            <li><a th:href="@{/cart.html}" class="text-white footer-link text-decoration-none" th:text="'Your Cart'">Your Cart</a></li>
+            <li><a th:href="@{/wishlist.html}" class="text-white footer-link text-decoration-none" th:text="'Wishlist'">Wishlist</a></li>
+            <li><a th:href="@{/orders.html}" class="text-white footer-link text-decoration-none" th:text="'Your Orders'">Your Orders</a></li>
+            <li><a th:href="@{/profile.html}" class="text-white footer-link text-decoration-none" th:text="'Account'">Account</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 footer-section">
+          <h5 th:text="'Stay Connected'">Stay Connected</h5>
+          <p th:text="'Subscribe to our newsletter for the latest updates and offers!'">Subscribe to our newsletter for the latest updates and offers!</p>
+          <div class="input-group mb-3">
+            <input type="email" class="form-control" th:placeholder="'Enter your email'" />
+            <button class="btn btn-primary ripple-btn" type="button" th:text="'Subscribe'">Subscribe</button>
+          </div>
+          <h5 class="mt-2" th:text="'Follow Us'">Follow Us</h5>
+          <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-twitter"></i></a>
+          <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-instagram"></i></a>
+          <a th:href="@{#}" class="text-white social-icon"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <hr class="bg-white my-2" />
+      <p class="text-center mb-0" th:text="'© 2025 ShopEase. All rights reserved.'">© 2025 ShopEase. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js}"></script>
+  
+    <script th:src="@{/static/js/cart.js}"></script>
+</body>
+</html>

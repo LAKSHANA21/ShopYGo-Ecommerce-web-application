@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Portal</title>
+    <link rel="stylesheet" href="/static/css/seller.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Additional head content will be inserted here -->
+    <th:block th:replace="~{${headContent}}"></th:block>
+</head>
+<body>
+    <header class="seller-header" th:fragment="header">
+        <h1>Seller Portal</h1>
+        <nav class="seller-nav">
+            <a href="/seller/dashboard" th:classappend="${#httpServletRequest.requestURI == '/seller/dashboard'} ? 'active'">Dashboard</a>
+            <a href="/seller/products" th:classappend="${#httpServletRequest.requestURI == '/seller/products'} ? 'active'">Products</a>
+            <a href="/seller/profile" th:classappend="${#httpServletRequest.requestURI == '/seller/profile'} ? 'active'">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    </header>
+    
+    <div class="seller-container">
+        <th:block th:replace="${content}"></th:block>
+    </div>
+    
+    <script src="/static/js/seller.js"></script>
+</body>
+</html>

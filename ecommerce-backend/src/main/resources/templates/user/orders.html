@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order History - E-commerce</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/static/css/orders.css}" rel="stylesheet">
+</head>
+  <body>
+    <!-- Alert -->
+    <div id="alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1100;"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent shadow-lg sticky-top" id="mainNav">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-white" th:href="@{/products}">
+          <i class="fas fa-shopping-bag me-2"></i>ShopEase
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+            <li class="nav-item">
+              <a class="nav-link text-white" th:href="@{/products}">
+                <i class="fas fa-store me-1"></i> Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" th:href="@{/cart}">
+                <i class="fas fa-shopping-cart me-1"></i> Cart
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" th:href="@{/wishlist}">
+                <i class="fas fa-heart me-1"></i> Wishlist
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white active" th:href="@{/orders}">
+                <i class="fas fa-box me-1"></i> Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" th:href="@{/profile}">
+                <i class="fas fa-user me-1"></i> Profile
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" th:href="@{/logout}" id="auth-link">
+                <i class="fas fa-sign-out-alt me-1"></i>
+                <span id="auth-text">Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="orders-container">
+      <h2 class="section-title">Your Orders</h2>
+      <div id="spinner" class="spinner" th:unless="${not #lists.isEmpty(orders)}">
+        <div class="spinner-border loading-spinner animate-spinner" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Loading your orders...</p>
+      </div>
+      <div class="order-cards" id="order-items">
+        <!-- No orders message -->
+        <div class="no-orders" th:if="${#lists.isEmpty(orders)}">
+          <i class="fas fa-box-open fa-3x"></i>
+          <h3>No Orders Yet</h3>
+          <p>You haven't placed any orders yet.</p>
+          <a th:href="@{/products}" class="btn btn-primary">Start Shopping</a>
+        </div>
+        
+        <!-- Orders list -->
+        <div th:each="order : ${orders}" class="order-card">
+          <div class="order-header">
+            <div class="order-info">
+              <p class="order-id">
+                <strong>Order ID:</strong> 
+                <span th:text="${order.orderId}"></span>
+              </p>
+              <p class="order-date">
+                <strong>Order Date:</strong> 
+                <span th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}"></span>
+              </p>
+            </div>
+            <div class="order-status">
+              <span th:class="${'status-badge ' + order.status.toLowerCase().replace(' ', '-')}" 
+                    th:text="${order.status}"></span>
+            </div>
+          </div>
+          
+          <div th:each="item : ${order.items}" class="order-item">
+            <div class="item-image">
+              <img th:src="@{'/static/images/products/' + ${item.image}}" th:alt="${item.productName}">
+            </div>
+            <div class="item-details">
+              <h5 th:text="${item.productName}"></h5>
+              <p class="item-price">
+                <span th:text="'₹' + ${#numbers.formatDecimal(item.price, 1, 2, 'POINT')}"></span>
+                <span th:if="${item.discount > 0}" class="original-price" 
+                      th:text="'₹' + ${#numbers.formatDecimal(item.originalPrice, 1, 2, 'POINT')}"></span>
+                <span th:if="${item.discount > 0}" class="discount" 
+                      th:text="'(' + ${item.discount} + '% off)'"></span>
+              </p>
+              <p class="item-quantity" th:text="'Quantity: ' + ${item.quantity}"></p>
+              <p class="item-variants" th:if="${not #strings.isEmpty(item.variants)}">
+                <strong>Variants:</strong> 
+                <span th:text="${item.variants}"></span>
+              </p>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#orderItemModal"
+                      th:attr="data-product-name=${item.productName},
+                              data-quantity=${item.quantity},
+                              data-variants=${item.variants},
+                              data-status=${order.status},
+                              data-order-id=${order.orderId},
+                              data-order-item-id=${item.id}">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+              <button th:if="${order.status == 'PROCESSING'}" class="btn btn-cancel" 
+                      th:attr="data-order-id=${order.orderId}, data-order-item-id=${item.id}">
+                <i class="fas fa-times"></i> Cancel Item
+              </button>
+              <button th:if="${order.status == 'DELIVERED'}" class="btn btn-return" 
+                      th:attr="data-order-id=${order.orderId}, data-order-item-id=${item.id}">
+                <i class="fas fa-undo"></i> Return/Exchange
+              </button>
+            </div>
+          </div>
+          
+          <div class="order-footer">
+            <div class="order-total">
+              <p>
+                <strong>Total:</strong> 
+                <span th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2, 'POINT')}"></span>
+              </p>
+            </div>
+            <div class="order-actions">
+              <button th:if="${order.status == 'DELIVERED'}" class="btn btn-rate">
+                <i class="fas fa-star"></i> Rate Products
+              </button>
+              <button th:if="${order.status == 'PROCESSING' || order.status == 'SHIPPED'}" 
+                      class="btn btn-track">
+                <i class="fas fa-truck"></i> Track Order
+              </button>
+              <button class="btn btn-reorder">
+                <i class="fas fa-shopping-cart"></i> Reorder
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="continue-shopping" th:unless="${#lists.isEmpty(orders)}">
+        Continue shopping?
+        <a th:href="@{/products}">Browse Products</a>
+      </p>
+    </div>
+
+    <!-- Modal for Order Item Details -->
+    <div class="modal fade" id="orderItemModal" tabindex="-1" aria-labelledby="orderItemModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderItemModalLabel">Order Item Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="modal-order-item-details">
+              <p><strong>Product:</strong> <span id="modal-product-name"></span></p>
+              <p><strong>Quantity:</strong> <span id="modal-quantity"></span></p>
+              <p><strong>Variants:</strong> <span id="modal-variants"></span></p>
+              <p><strong>Status:</strong> <span id="modal-status"></span></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-cancel" id="modal-cancel-btn" data-order-id="" data-order-item-id="" style="display: none;">
+              <i class="fas fa-times me-1"></i> Cancel Item
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-3 position-relative" id="footer">
+      <canvas id="particle-canvas"></canvas>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3 footer-section">
+            <h5>ShopEase</h5>
+            <p>Your one-stop destination for quality products at affordable prices. We're committed to providing the best shopping experience.</p>
+            <p><i class="fas fa-map-marker-alt"></i> 123 ShopEase St, Commerce City</p>
+            <p><i class="fas fa-envelope"></i> support@shopease.com</p>
+          </div>
+          <div class="col-md-3 footer-section">
+            <h5>Customer Service</h5>
+            <ul class="list-unstyled">
+              <li><a th:href="@{/contact}" class="text-white footer-link text-decoration-none">Contact Us</a></li>
+              <li><a th:href="@{/faq}" class="text-white footer-link text-decoration-none">FAQs</a></li>
+              <li><a th:href="@{/shipping}" class="text-white footer-link text-decoration-none">Shipping Policy</a></li>
+              <li><a th:href="@{/returns}" class="text-white footer-link text-decoration-none">Returns & Refunds</a></li>
+              <li><a th:href="@{/privacy}" class="text-white footer-link text-decoration-none">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3 footer-section">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li><a th:href="@{/products}" class="text-white footer-link text-decoration-none">Products</a></li>
+              <li><a th:href="@{/cart}" class="text-white footer-link text-decoration-none">Your Cart</a></li>
+              <li><a th:href="@{/wishlist}" class="text-white footer-link text-decoration-none">Wishlist</a></li>
+              <li><a th:href="@{/orders}" class="text-white footer-link text-decoration-none">Your Orders</a></li>
+              <li><a th:href="@{/profile}" class="text-white footer-link text-decoration-none">Account</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3 footer-section">
+            <h5>Stay Connected</h5>
+            <p>Subscribe to our newsletter for the latest updates and offers!</p>
+            <form th:action="@{/subscribe}" method="post" class="input-group mb-3">
+              <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+              <button class="btn btn-primary ripple-btn" type="submit">Subscribe</button>
+            </form>
+            <h5 class="mt-2">Follow Us</h5>
+            <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-twitter"></i></a>
+          <a th:href="@{#}" class="text-white me-2 social-icon"><i class="fab fa-instagram"></i></a>
+          <a th:href="@{#}" class="text-white social-icon"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        </div>
+        <hr class="bg-white my-2">
+        <p class="text-center mb-0">© 2025 ShopEase. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/static/js/orders.js}"></script>
+    <!-- CSRF Token for AJAX requests -->
+</body>
+</html>

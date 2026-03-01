@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="seller/layout :: head">
+    <title>Seller Profile</title>
+</head>
+<body>
+    <div th:replace="seller/layout :: header"></div>
+    
+    <div id="sellerProfile">
+        <div class="seller-profile">
+            <div class="seller-profile-card">
+                <div class="seller-profile-header">
+                    <div class="seller-profile-img">
+                        <i class="fas fa-user" style="font-size: 2em; color: #666;"></i>
+                    </div>
+                    <div class="seller-profile-info">
+                        <h3 id="sellerName">Loading...</h3>
+                        <p id="sellerStore">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="seller-profile-details">
+                    <div class="seller-detail-row">
+                        <div class="seller-detail-label">Email:</div>
+                        <div class="seller-detail-value" id="sellerEmail">Loading...</div>
+                    </div>
+                    <div class="seller-detail-row">
+                        <div class="seller-detail-label">Phone:</div>
+                        <div class="seller-detail-value" id="sellerPhone">Loading...</div>
+                    </div>
+                    <div class="seller-detail-row">
+                        <div class="seller-detail-label">Status:</div>
+                        <div class="seller-detail-value" id="sellerStatus">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="seller-profile-card">
+                <h3>Business Information</h3>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Business Details:</div>
+                    <div class="seller-detail-value" id="businessDetails">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">GST Number:</div>
+                    <div class="seller-detail-value" id="gstNumber">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Contact Number:</div>
+                    <div class="seller-detail-value" id="contactNumber">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Business Email:</div>
+                    <div class="seller-detail-value" id="businessEmail">Loading...</div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">Address</h3>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Address:</div>
+                    <div class="seller-detail-value">
+                        <div id="addressLine1">Loading...</div>
+                        <div id="addressLine2"></div>
+                    </div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">City:</div>
+                    <div class="seller-detail-value" id="city">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">State:</div>
+                    <div class="seller-detail-value" id="state">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Postal Code:</div>
+                    <div class="seller-detail-value" id="postalCode">Loading...</div>
+                </div>
+                <div class="seller-detail-row">
+                    <div class="seller-detail-label">Country:</div>
+                    <div class="seller-detail-value" id="country">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

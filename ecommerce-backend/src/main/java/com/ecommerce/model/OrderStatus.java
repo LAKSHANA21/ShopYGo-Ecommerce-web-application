@@ -1,0 +1,6 @@
+package com.ecommerce.model;
+
+public enum OrderStatus {
+    PLACED, PROCESSING, SHIPPED, DELIVERED, CANCELLED,
+    RETURN_REQUESTED, RETURNED, REPLACEMENT_REQUESTED, REPLACED
+}

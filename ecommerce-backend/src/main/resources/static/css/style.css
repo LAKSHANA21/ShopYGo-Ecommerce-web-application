@@ -1,0 +1,35 @@
+body {
+    background-color: #f8f9fa;
+    padding-top: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.form-control, .form-select {
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 10px 20px;
+}
+
+.profile-image-placeholder {
+    font-size: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-top: 20px;
+    }
+}
